@@ -1,15 +1,11 @@
 import React from 'react'
+import {type  FooterProps } from '../types/Props'
 
-interface HeaderProps {
-    className?: string;
-}
 
-const Footer: React.FC<HeaderProps> = ({ className = "" }) => {
+const Footer: React.FC<FooterProps> = ({ className = "", textContent= "" }) => {
     return (
         <footer className={className}>
-            <p className="font-serif text-[10px] tracking-[0.8em] uppercase text-black">
-                The Vault — Propiedad Privada
-            </p>
+            <p className="font-serif text-[10px] tracking-[0.8em] uppercase text-black">{textContent}</p>
         </footer>
     )
 }

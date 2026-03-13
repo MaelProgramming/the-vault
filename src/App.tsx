@@ -1,12 +1,40 @@
+import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './services/firebase';
+import { AuthProvider } from './context/AuthContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
-import AuthCallback from './pages/AuthCallBack';
+import AuthCallback from './pages/AuthCallback';
+import Loader from './components/Loader';
+import Navbar from './components/Navbar';
+import Profile from './pages/Profile';
 
-// Petit garde du corps pour protéger la Home
+// LE GARDE DU CORPS INTELLIGENT
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
-  const token = localStorage.getItem('vault_token');
-  if (!token) return <Navigate to="/login" replace />;
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    // On demande à Firebase, pas au localStorage qui est lent à la détente
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        const token = await currentUser.getIdToken();
+        localStorage.setItem('vault_token', token);
+        setUser(currentUser);
+      } else {
+        localStorage.removeItem('vault_token');
+        setUser(null);
+      }
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) return <Loader />; // On attend que le videur vérifie la liste
+
+  if (!user) return <Navigate to="/login" replace />;
+
   return children;
 };
 
@@ -14,26 +42,26 @@ function App() {
   return (
     <Router>
       <div className='app'>
-        <Routes>
-          {/* Route publique pour l'entrée du club */}
-          <Route path="/login" element={<Login />} />
+        <AuthProvider>
+          <Navbar />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
 
-          {/* Route technique pour intercepter le token de Supabase */}
-          <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* La Home est réservée aux membres connectés */}
-          <Route 
-            path="/" 
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            } 
-          />
+            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path='/profile' element={<Profile/>}></Route>
+          </Routes>
+        </AuthProvider>
 
-          {/* Redirection par défaut si le mec se perd dans les couloirs */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
       </div>
     </Router>
   );

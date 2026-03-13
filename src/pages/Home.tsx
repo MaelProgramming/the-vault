@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
-import IdentityCard from '../components/IdentityCard';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Loader from '../components/Loader';
 import { getMembers } from '../services/api';
-import type { Member as M } from '../types/Members'
+import type { M } from '../types/Props';
+import Grid from '../components/Grid';
 
 const Home = () => {
     const [members, setMembers] = useState<M[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState('')
+    const [error, setError] = useState('');
+    const [genderFilter, setGenderFilter] = useState<'ALL' | 'M' | 'F'>('ALL');
 
     useEffect(() => {
         getMembers()
@@ -18,7 +19,11 @@ const Home = () => {
             .finally(() => setIsLoading(false));
     }, []);
 
-    // On bloque ici tant que ça charge
+    // Logique de filtrage instantanée
+    const filteredMembers = members.filter(m => 
+        genderFilter === 'ALL' ? true : m.gender === genderFilter
+    );
+
     if (isLoading) return <Loader />;
     
     if (error) return (
@@ -29,30 +34,38 @@ const Home = () => {
     );
 
     return (
-        /* Ton style intouché */
-        <main className="min-h-screen bg-[#FDFDFD] flex flex-col items-center py-20 px-4">
+        <main className="min-h-screen bg-[#FDFDFD] flex flex-col items-center pt-20 pb-32 px-4">
+            <Header 
+                className='mb-12 text-center max-w-2xl' 
+                titleContent='The Vault' 
+                textContent='Exclusividad • Tradición • Futuro' 
+            />
 
-            {/* Header avec une bordure subtile pour marquer le prestige */}
-            <Header className='mb-24 text-center max-w-2xl'></Header>
-
-            {/* La Grid : justify-items-center pour que la carte soit centrée si elle est seule */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 w-full max-w-7xl justify-items-center items-start">
-                {members.map((member) => (
-                    <IdentityCard
-                        key={member.id}
-                        id={member.id} 
-                        name={member.full_name}
-                        major={member.major}
-                        year={member.graduation_year}
-                        imageUrl={member.avatar_url}
-                        bio={member.bio}
-                    />
+            {/* BARRE DE FILTRES MINIMALISTE */}
+            <div className="flex gap-8 mb-16 border-b border-stone-100 pb-4 transition-all duration-500">
+                {(['ALL', 'M', 'F'] as const).map((t) => (
+                    <button
+                        key={t}
+                        onClick={() => setGenderFilter(t)}
+                        className={`text-[10px] tracking-[0.3em] uppercase transition-all ${
+                            genderFilter === t ? 'text-black font-bold border-b border-black' : 'text-stone-300 hover:text-stone-500'
+                        }`}
+                    >
+                        {t === 'ALL' ? 'Todos' : t === 'M' ? 'Gentlemen' : 'Ladies'}
+                    </button>
                 ))}
             </div>
 
-            {/* Footer discret pour finir le look */}
-            <Footer className='mt-32 opacity-20 hover:opacity-100 transition-opacity duration-1000'></Footer>
+            {/* On passe les membres FILTRÉS à la Grid */}
+            <Grid 
+                className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 w-full max-w-7xl justify-items-center items-start' 
+                members={filteredMembers} 
+            />
             
+            <Footer 
+                className='mt-32 opacity-20 hover:opacity-100 transition-opacity duration-1000' 
+                textContent='The Vault - 2026' 
+            />
         </main>
     );
 };
