@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { getMembers, uploadAvatar } from '../services/api';
+import { uploadAvatar } from '../services/api';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import Loader from '../components/Loader';
@@ -15,24 +15,29 @@ const Profile = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const fetchMyProfile = async () => {
-      if (!user?.email) return;
-      try {
-        const members = await getMembers();
-        // On filtre par email, c'est l'identifiant unique du Vault
-        const me = members.find((m: any) => m.email === user.email); 
-        if (me) {
-          setProfile(me);
-          setBio(me.bio);
+  const fetchMyProfile = async () => {
+    if (!user?.email) return;
+    try {
+      const token = localStorage.getItem('vault_token');
+      const response = await fetch('https://api-vault-two.vercel.app/api/members/me', {
+        headers: {
+          'Authorization': `Bearer ${token}`
         }
-      } catch (err) {
-        console.error("Erreur de registre.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchMyProfile();
-  }, [user]);
+      });
+
+      if (!response.ok) throw new Error("Erreur de registre.");
+      
+      const me = await response.json();
+      setProfile(me);
+      setBio(me.bio);
+    } catch (err) {
+      console.error("Erreur de chargement du profil.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchMyProfile();
+}, [user]);
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

@@ -4,7 +4,7 @@ import Footer from '../components/Footer';
 import Loader from '../components/Loader';
 import { getMembers } from '../services/api';
 import type { M } from '../types/Props';
-import Grid from '../components/Grid';
+import Stack from '../components/Grid'; // Adieu Grid, bonjour l'élite
 
 const Home = () => {
     const [members, setMembers] = useState<M[]>([]);
@@ -19,7 +19,7 @@ const Home = () => {
             .finally(() => setIsLoading(false));
     }, []);
 
-    // Logique de filtrage instantanée
+    // Filtrage instantané pour la pile
     const filteredMembers = members.filter(m => 
         genderFilter === 'ALL' ? true : m.gender === genderFilter
     );
@@ -29,20 +29,20 @@ const Home = () => {
     if (error) return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-[#FDFDFD] px-4 text-center">
             <h2 className="font-serif text-2xl mb-4 italic text-[#1A1A1A]">Accès restreint</h2>
-            <p className="text-gray-500 max-w-sm">{error}</p>
+            <p className="text-gray-Stone-500 max-w-sm">{error}</p>
         </div>
     );
 
     return (
-        <main className="min-h-screen bg-[#FDFDFD] flex flex-col items-center pt-20 pb-32 px-4">
+        <main className="min-h-screen bg-[#FDFDFD] flex flex-col items-center pt-20 pb-32 px-4 overflow-hidden">
             <Header 
                 className='mb-12 text-center max-w-2xl' 
                 titleContent='The Vault' 
                 textContent='Exclusividad • Tradición • Futuro' 
             />
 
-            {/* BARRE DE FILTRES MINIMALISTE */}
-            <div className="flex gap-8 mb-16 border-b border-stone-100 pb-4 transition-all duration-500">
+            {/* BARRE DE FILTRES */}
+            <div className="flex gap-8 mb-16 border-b border-stone-100 pb-4 z-10">
                 {(['ALL', 'M', 'F'] as const).map((t) => (
                     <button
                         key={t}
@@ -56,11 +56,13 @@ const Home = () => {
                 ))}
             </div>
 
-            {/* On passe les membres FILTRÉS à la Grid */}
-            <Grid 
-                className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 w-full max-w-7xl justify-items-center items-start' 
-                members={filteredMembers} 
-            />
+            {/* LA PILE DE CARTES */}
+            <div className="relative w-full max-w-md flex justify-center items-center h-[550px]">
+                <Stack 
+                    members={filteredMembers} 
+                    className="w-full flex justify-center"
+                />
+            </div>
             
             <Footer 
                 className='mt-32 opacity-20 hover:opacity-100 transition-opacity duration-1000' 

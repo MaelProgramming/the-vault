@@ -1,17 +1,26 @@
 import React, { useState, useRef } from 'react';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { uploadAvatar } from '../services/api';
-import type { MProps } from '../types/Props';
+import type { ExtendedProps } from '../types/Props';
 
-const IdentityCard: React.FC<MProps> = ({ id, name, major, year, imageUrl, bio, gender }) => {
+// On étend les props pour le système de pile
+
+const IdentityCard: React.FC<ExtendedProps> = ({ 
+  id, name, major, year, imageUrl, bio, gender, isTopCard, onSwiped 
+}) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState(imageUrl);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // --- LOGIQUE DE SWIPE (Framer Motion) ---
+  const x = useMotionValue(0);
+  const rotate = useTransform(x, [-200, 200], [-20, 20]);
+  const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setIsUploading(true);
     try {
       const newUrl = await uploadAvatar(file, id);
@@ -23,40 +32,68 @@ const IdentityCard: React.FC<MProps> = ({ id, name, major, year, imageUrl, bio, 
     }
   };
 
-  return (
-    <>
-      {/* CARD UI */}
-      <div className="group w-full max-w-[350px] bg-white border border-black/5 p-4 transition-all duration-700 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
-        <div className="relative h-[450px] w-full overflow-hidden bg-[#F5F5F5] mb-6">
-          <img 
-            src={currentImage} 
-            alt={name} 
-            className="h-full w-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-[1.5s] ease-in-out scale-100 group-hover:scale-105"
-          />
-          {/* Label de genre discret */}
-          <div className="absolute bottom-4 left-4 overflow-hidden">
-            <span className="block text-[9px] tracking-[0.3em] text-white bg-black/80 px-3 py-1 uppercase transform translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
-              {gender === 'F' ? 'Lady' : 'Gentleman'}
-            </span>
-          </div>
-        </div>
+  const handleDragEnd = (_: any, info: any) => {
+    if (Math.abs(info.offset.x) > 100) {
+      const direction = info.offset.x > 0 ? 'right' : 'left';
+      if (onSwiped) onSwiped(direction);
+    }
+  };
 
-        <div className="text-center px-2">
-          <h2 className="font-serif text-xl tracking-[0.15em] uppercase text-black">{name}</h2>
-          <div className="flex items-center justify-center gap-2 mt-2">
-             <p className="text-[10px] font-light tracking-widest text-stone-400 uppercase">{major}</p>
-             <span className="w-1 h-1 bg-stone-300 rounded-full"></span>
-             <p className="text-[10px] font-light tracking-widest text-stone-400 uppercase">{year}</p>
-          </div>
-          
-          <button 
-            onClick={() => setIsOpen(true)}
-            className="mt-8 w-full border border-black py-3 text-[9px] tracking-[0.25em] text-black hover:bg-black hover:text-white transition-colors duration-500 uppercase"
-          >
-            Acceder al perfil
-          </button>
+  // Le contenu de la carte (extrait pour éviter la répétition)
+  const cardInnerContent = (
+    <div className="group w-full max-w-[350px] bg-white border border-black/5 p-4 transition-all duration-700 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
+      <div className="relative h-[450px] w-full overflow-hidden bg-[#F5F5F5] mb-6">
+        <img 
+          src={currentImage} 
+          alt={name} 
+          className="h-full w-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-[1.5s] ease-in-out scale-100 group-hover:scale-105"
+        />
+        <div className="absolute bottom-4 left-4 overflow-hidden">
+          <span className="block text-[9px] tracking-[0.3em] text-white bg-black/80 px-3 py-1 uppercase transform translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
+            {gender === 'F' ? 'Lady' : 'Gentleman'}
+          </span>
         </div>
       </div>
+
+      <div className="text-center px-2">
+        <h2 className="font-serif text-xl tracking-[0.15em] uppercase text-black">{name}</h2>
+        <div className="flex items-center justify-center gap-2 mt-2">
+           <p className="text-[10px] font-light tracking-widest text-stone-400 uppercase">{major}</p>
+           <span className="w-1 h-1 bg-stone-300 rounded-full"></span>
+           <p className="text-[10px] font-light tracking-widest text-stone-400 uppercase">{year}</p>
+        </div>
+        
+        <button 
+          onClick={(e) => {
+            e.stopPropagation(); // Empêche le drag de s'activer
+            setIsOpen(true);
+          }}
+          className="mt-8 w-full border border-black py-3 text-[9px] tracking-[0.25em] text-black hover:bg-black hover:text-white transition-colors duration-500 uppercase"
+        >
+          Acceder al perfil
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      {isTopCard ? (
+        <motion.div
+          style={{ x, rotate, opacity, position: 'absolute' }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          onDragEnd={handleDragEnd}
+          whileDrag={{ scale: 1.05 }}
+          className="cursor-grab active:cursor-grabbing z-50"
+        >
+          {cardInnerContent}
+        </motion.div>
+      ) : (
+        <div className="absolute opacity-40 scale-95 translate-y-4 pointer-events-none z-0">
+          {cardInnerContent}
+        </div>
+      )}
 
       {/* MODAL SYSTEM */}
       {isOpen && (
@@ -67,10 +104,8 @@ const IdentityCard: React.FC<MProps> = ({ id, name, major, year, imageUrl, bio, 
           ></div>
 
           <div className="relative w-full max-w-3xl overflow-hidden bg-[#FDFDFD] shadow-2xl flex flex-col md:flex-row animate-in fade-in zoom-in duration-300">
-            {/* Image Section */}
             <div className="relative h-80 md:h-auto md:w-1/2 overflow-hidden group/img">
               <img src={currentImage} alt={name} className="h-full w-full object-cover object-top" />
-              
               <div 
                 onClick={() => fileInputRef.current?.click()}
                 className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-all cursor-pointer backdrop-separate"
@@ -82,7 +117,6 @@ const IdentityCard: React.FC<MProps> = ({ id, name, major, year, imageUrl, bio, 
               <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
             </div>
 
-            {/* Content Section */}
             <div className="p-10 md:w-1/2 flex flex-col">
               <div className="flex justify-between items-start mb-12">
                 <div>

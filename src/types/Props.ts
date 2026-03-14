@@ -10,9 +10,18 @@ interface MemberProps {
   year: number;
   imageUrl: string;
   bio: string;
-  gender: 'M' | 'F'
+  gender: 'M' | 'F';
+  isTopCard?: boolean;
+
 }
 
+
+
+export interface ExtendedProps extends MemberProps {
+    isTopCard?: boolean;
+    onSwiped?: (direction: 'left' | 'right') => void;
+    
+}
 export interface FooterProps {
     className?: string;
     textContent?: string
@@ -36,5 +45,9 @@ export interface HeaderProps {
     titleContent: string
 }
 
+export interface Props {
+  user: any;
+  onSwipe: (direction: 'left' | 'right') => void;
+}
 export type { Member as M }
 export type { MemberProps as MProps }

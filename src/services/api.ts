@@ -20,8 +20,20 @@ export const loginMember = async (email: string, pass: string) => {
 
 // 2. Fetch des membres (toujours public, on reste ouvert aux curieux autorisés)
 export const getMembers = async () => {
-  const response = await fetch(`${BASE_API}/api/members`);
-  if (!response.ok) throw new Error('Error al conectar con el servidor');
+  const token = localStorage.getItem('vault_token');
+
+  const response = await fetch(`${BASE_API}/api/members`, {
+    headers: {
+      'Authorization': `Bearer ${token}` // Voilà ce qui manquait pour ouvrir la porte
+    }
+  });
+
+  if (response.status === 401) {
+    throw new Error('Tu n’as plus le droit d’être ici. Reconnecte-toi.');
+  }
+
+  if (!response.ok) throw new Error('Le serveur a un problème de riche.');
+  
   return response.json();
 };
 
