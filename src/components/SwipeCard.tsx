@@ -1,5 +1,4 @@
 import { motion, useMotionValue, useTransform } from 'framer-motion';
-import { useState } from 'react';
 import { type Props } from '../types/Props';
 
 export const SwipeCard = ({ user, onSwipe }: Props) => {
