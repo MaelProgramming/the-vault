@@ -17,3 +17,12 @@
   /* La magie est ici : */
   animation-delay: var(--stagger-delay);
 }
+
+@keyframes shimmerBg {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
+}
+
+.animate-shimmer-bg {
+  animation: shimmerBg 3s linear infinite;
+}

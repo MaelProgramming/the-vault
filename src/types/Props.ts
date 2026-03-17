@@ -8,15 +8,12 @@ interface MemberProps {
   name: string;
   major: string;
   year: number;
-  imageUrl: string;
+  avatar_url: string;
   bio: string;
   gender: 'M' | 'F';
   isTopCard?: boolean;
-
+  is_verified?: boolean;
 }
-
-
-
 export interface ExtendedProps extends MemberProps {
     isTopCard?: boolean;
     onSwiped?: (direction: 'left' | 'right') => void;
@@ -33,12 +30,13 @@ interface Member {
     major: string;
     gender: 'M' | 'F'
     year: number;
-    imageUrl: string;
+    avatar_url: string;
     bio: string;
     full_name: string;
     graduation_year: number;
-    avatar_url: string;
+    is_verified: boolean
 }
+
 export interface HeaderProps {
     className?: string;
     textContent: string

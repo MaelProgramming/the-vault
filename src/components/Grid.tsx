@@ -35,9 +35,10 @@ const Stack: React.FC<GridProps> = ({ members, className = "" }) => {
                         name={member.full_name}
                         major={member.major}
                         year={member.graduation_year}
-                        imageUrl={member.avatar_url}
+                        avatar_url={member.avatar_url}
                         bio={member.bio}
                         gender={member.gender}
+                        is_verified={member.is_verified}
                         // Seule la carte du dessus (la dernière du map) est draggable
                         isTopCard={index === stack.length - 1}
                         onSwiped={() => handleSwipeSuccess(member.id)}
