@@ -75,10 +75,7 @@ const Home = () => {
                 />
             </div>
 
-            <Footer
-                className='mt-32 opacity-20 hover:opacity-100 transition-opacity duration-1000'
-                textContent='The Vault - 2026'
-            />
+            <Footer className="mt-20 opacity-50 hover:opacity-100 transition-opacity duration-1000" textContent='The Vault - 2026' />
         </main>
     );
 };
