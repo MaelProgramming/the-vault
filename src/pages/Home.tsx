@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import Header from '../components/Header'; // À terme : @layout/Header
-import Footer from '../components/Footer';
-import Loader from '../components/Loader';
+import { useEffect, useState, useMemo } from 'react';
+import Header from '@layout/Header'; // À terme : @layout/Header
+import Footer from '@layout/Footer';
+import Loader from '@layout/Loader';
 import { getMembers } from '../services/api';
 import type { M } from '../types/Props';
 import { GoldCard } from '../shared/ui/GoldCard'; // Voilà l'héritage
@@ -20,8 +20,9 @@ const Home = () => {
             .finally(() => setIsLoading(false));
     }, []);
 
-    const filteredMembers = members.filter(m =>
-        genderFilter === 'ALL' ? true : m.gender === genderFilter
+    const filteredMembers = useMemo(() =>
+        members.filter(m => genderFilter === 'ALL' ? true : m.gender === genderFilter),
+        [members, genderFilter]
     );
 
     if (isLoading) return <Loader />;
@@ -50,8 +51,8 @@ const Home = () => {
                         key={t}
                         onClick={() => setGenderFilter(t)}
                         className={`text-[10px] tracking-[0.3em] uppercase transition-all duration-500 ${genderFilter === t
-                                ? 'text-[#C5A059] font-bold border-b border-[#C5A059]'
-                                : 'text-[#C5A059]/40 hover:text-[#C5A059]/80'
+                            ? 'text-[#C5A059] font-bold border-b border-[#C5A059]'
+                            : 'text-[#C5A059]/40 hover:text-[#C5A059]/80'
                             }`}
                     >
                         {t === 'ALL' ? 'Todos' : t === 'M' ? 'Gentlemen' : 'Ladies'}
@@ -64,7 +65,13 @@ const Home = () => {
                 <Stack
                     members={filteredMembers}
                     className="w-full flex justify-center"
-                // On passera la GoldCard en renderItem plus tard
+                    {...filteredMembers.length > 0 ? (
+                        <Stack members={filteredMembers} className="w-full flex justify-center" />
+                    ) : (
+                        <div className="flex flex-col items-center justify-center text-[#C5A059]/50 italic font-serif">
+                            <p>Aucun membre ne correspond à ce critère.</p>
+                        </div>
+                    )}
                 />
             </div>
 

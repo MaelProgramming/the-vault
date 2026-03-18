@@ -16,9 +16,11 @@ const IdentityCard: React.FC<ExtendedProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Détermination du rang (Fondateurs 'hardcodés', le reste basé sur is_verified)
-  const isFounder = name.includes('Mael Gruand') || name.includes('Eliot'); 
+  const isFounder: boolean = name.includes('Mael Gruand');
+  const isCoFounder: boolean = name.includes('Eliot Dangas')
   let rank: RankType = 'POSTULANT';
   if (isFounder) { rank = 'FOUNDER'; }
+  else if (isCoFounder) { rank = 'CO-FOUNDER'; }
   else if (is_verified) { rank = 'HEIR'; }
 
 
@@ -60,41 +62,41 @@ const IdentityCard: React.FC<ExtendedProps> = ({
     <div className="group w-full max-w-[350px] transition-all duration-700 hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)]">
       <GoldCard>
         <div className="relative h-[450px] w-full overflow-hidden bg-[#F5F5F5] mb-4">
-        <img
-          src={avatarSrc}
-          alt={name}
-          className="h-full w-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-[1.5s] ease-in-out scale-100 group-hover:scale-105"
-          onError={(e) => {
-            // Si l'image de ton serveur pète, on met l'UI Avatar
-            (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=F5F5DC&color=C5A059`;
-          }}
-        />
-        <div className="absolute bottom-4 left-4 overflow-hidden">
-          <span className="block text-[9px] tracking-[0.3em] text-white bg-black/80 px-3 py-1 uppercase transform translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
-            {gender === 'F' ? 'Lady' : 'Gentleman'}
-          </span>
-        </div>
-      </div>
-
-      <div className="text-center px-2">
-        <RankBadge rank={rank} className="mb-4" />
-        <h2 className="font-serif text-xl tracking-[0.15em] uppercase text-black">{name}</h2>
-        <div className="flex items-center justify-center gap-2 mt-2">
-          <p className="text-[10px] font-light tracking-widest text-stone-400 uppercase">{major}</p>
-          <span className="w-1 h-1 bg-stone-300 rounded-full"></span>
-          <p className="text-[10px] font-light tracking-widest text-stone-400 uppercase">{year}</p>
+          <img
+            src={avatarSrc}
+            alt={name}
+            className="h-full w-full object-cover object-top grayscale group-hover:grayscale-0 transition-all duration-[1.5s] ease-in-out scale-100 group-hover:scale-105"
+            onError={(e) => {
+              // Si l'image de ton serveur pète, on met l'UI Avatar
+              (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=F5F5DC&color=C5A059`;
+            }}
+          />
+          <div className="absolute bottom-4 left-4 overflow-hidden">
+            <span className="block text-[9px] tracking-[0.3em] text-white bg-black/80 px-3 py-1 uppercase transform translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
+              {gender === 'F' ? 'Lady' : 'Gentleman'}
+            </span>
+          </div>
         </div>
 
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsOpen(true);
-          }}
-          className="mt-8 w-full border border-black py-3 text-[9px] tracking-[0.25em] text-black hover:bg-black hover:text-white transition-colors duration-500 uppercase"
-        >
-          Acceder al perfil
-        </button>
-      </div>
+        <div className="text-center px-2">
+          <RankBadge rank={rank} className="mb-4" />
+          <h2 className="font-serif text-xl tracking-[0.15em] uppercase text-black">{name}</h2>
+          <div className="flex items-center justify-center gap-2 mt-2">
+            <p className="text-[10px] font-light tracking-widest text-stone-400 uppercase">{major}</p>
+            <span className="w-1 h-1 bg-stone-300 rounded-full"></span>
+            <p className="text-[10px] font-light tracking-widest text-stone-400 uppercase">{year}</p>
+          </div>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen(true);
+            }}
+            className="mt-8 w-full border border-black py-3 text-[9px] tracking-[0.25em] text-black hover:bg-black hover:text-white transition-colors duration-500 uppercase"
+          >
+            Acceder al perfil
+          </button>
+        </div>
       </GoldCard>
     </div>
   );

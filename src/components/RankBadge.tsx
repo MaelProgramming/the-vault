@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type RankType = 'FOUNDER' | 'HEIR' | 'POSTULANT';
+export type RankType = 'FOUNDER' | 'CO-FOUNDER' | 'HEIR' | 'POSTULANT';
 
 interface RankBadgeProps {
   rank: RankType;
@@ -23,15 +23,16 @@ export const RankBadge: React.FC<RankBadgeProps> = ({ rank, className = '' }) =>
 
   const getRankLabel = () => {
     switch (rank) {
-       case 'FOUNDER': return 'Fundador';
-       case 'HEIR': return 'Heredero';
-       case 'POSTULANT': return 'Postulante';
-       default: return 'Miembro';
+      case 'FOUNDER': return 'Fundador';
+      case 'CO-FOUNDER': return 'Co-Fundador';
+      case 'HEIR': return 'Heredero';
+      case 'POSTULANT': return 'Postulante';
+      default: return 'Miembro';
     }
   }
 
   return (
-    <span 
+    <span
       className={`inline-block px-3 py-1 text-[8px] tracking-[0.4em] uppercase font-bold rounded-sm ${getRankStyle()} ${className}`}
     >
       {getRankLabel()}
