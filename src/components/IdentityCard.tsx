@@ -33,6 +33,8 @@ const IdentityCard: React.FC<ExtendedProps> = ({
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-20, 20]);
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
+  const likeOpacity = useTransform(x, [0, 80], [0, 1]);
+  const nopeOpacity = useTransform(x, [0, -80], [0, 1]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -71,6 +73,23 @@ const IdentityCard: React.FC<ExtendedProps> = ({
               (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=F5F5DC&color=C5A059`;
             }}
           />
+
+          {/* INDICATEURS DE SWIPE (LIKE / PASS) */}
+          {isTopCard && (
+            <>
+              <motion.div style={{ opacity: likeOpacity }} className="absolute top-10 left-8 z-50 transform -rotate-12 border-4 border-emerald-500 rounded-full p-3 backdrop-blur-sm bg-black/30">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-emerald-500 fill-current" viewBox="0 0 24 24">
+                  <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+              </motion.div>
+              <motion.div style={{ opacity: nopeOpacity }} className="absolute top-10 right-8 z-50 transform rotate-12 border-4 border-red-500 rounded-full p-3 backdrop-blur-sm bg-black/30">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </motion.div>
+            </>
+          )}
+
           <div className="absolute bottom-4 left-4 overflow-hidden">
             <span className="block text-[9px] tracking-[0.3em] text-white bg-black/80 px-3 py-1 uppercase transform translate-y-10 group-hover:translate-y-0 transition-transform duration-500">
               {gender === 'F' ? 'Lady' : 'Gentleman'}

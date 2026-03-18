@@ -62,17 +62,13 @@ const Home = () => {
 
             {/* LA PILE DE CARTES — Chaque membre est désormais dans un écrin */}
             <div className="relative w-full max-w-md flex justify-center items-center h-[550px]">
-                <Stack
-                    members={filteredMembers}
-                    className="w-full flex justify-center"
-                    {...filteredMembers.length > 0 ? (
-                        <Stack members={filteredMembers} className="w-full flex justify-center" />
-                    ) : (
-                        <div className="flex flex-col items-center justify-center text-[#C5A059]/50 italic font-serif">
-                            <p>Aucun membre ne correspond à ce critère.</p>
-                        </div>
-                    )}
-                />
+                {filteredMembers.length > 0 ? (
+                    <Stack key={genderFilter} members={filteredMembers} className="w-full flex justify-center" />
+                ) : (
+                    <div className="flex flex-col items-center justify-center text-[#C5A059]/50 italic font-serif">
+                        <p>Aucun membre ne correspond à ce critère.</p>
+                    </div>
+                )}
             </div>
 
             <Footer className="mt-20 opacity-50 hover:opacity-100 transition-opacity duration-1000" textContent='The Vault - 2026' />

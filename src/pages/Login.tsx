@@ -81,6 +81,16 @@ const Login = () => {
           >
             {loading ? 'Verificando...' : 'Entrar en el Círculo'}
           </button>
+
+          <div className="text-center mt-4 pt-4">
+            <button
+              type="button"
+              onClick={() => navigate('/register')}
+              className="text-[#C5A059]/60 hover:text-[#C5A059] text-[10px] tracking-[0.2em] uppercase transition-colors"
+            >
+              No soy miembro (Solicitar Admisión)
+            </button>
+          </div>
         </form>
 
         {status && (
