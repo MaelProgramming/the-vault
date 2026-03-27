@@ -5,15 +5,16 @@ import type { ExtendedProps } from '../types/Props';
 import { GoldCard } from '../shared/ui/GoldCard';
 import { RankBadge } from './RankBadge';
 import type { RankType } from './RankBadge';
+import { useAuth } from '../context/AuthContext';
 
 const IdentityCard: React.FC<ExtendedProps> = ({
   id, name, major, year, avatar_url, bio, gender, isTopCard, is_verified, onSwiped
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  // On initialise, mais on va surveiller les changements
   const [currentImage, setCurrentImage] = useState(avatar_url);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
 
   // Détermination du rang (Fondateurs 'hardcodés', le reste basé sur is_verified)
   const isFounder: boolean = name.includes('Mael Gruand');
@@ -150,15 +151,19 @@ const IdentityCard: React.FC<ExtendedProps> = ({
           <div className="relative w-full max-w-3xl overflow-hidden bg-[#FDFDFD] shadow-2xl flex flex-col md:flex-row animate-in fade-in zoom-in duration-300 border border-[#C5A059]/20">
             <div className="relative h-80 md:h-auto md:w-1/2 overflow-hidden group/img bg-stone-100">
               <img src={avatarSrc} alt={name} className="h-full w-full object-cover object-top" />
-              <div
-                onClick={() => fileInputRef.current?.click()}
-                className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-all cursor-pointer"
-              >
-                <span className="text-white text-[9px] tracking-[0.3em] uppercase border border-white/30 px-6 py-3 hover:bg-white hover:text-black transition-all">
-                  {isUploading ? 'Procesando...' : 'Cambiar Imagen'}
-                </span>
-              </div>
-              <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
+              {user?.uid === id && (
+                <>
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-all cursor-pointer"
+                  >
+                    <span className="text-white text-[9px] tracking-[0.3em] uppercase border border-white/30 px-6 py-3 hover:bg-white hover:text-black transition-all">
+                      {isUploading ? 'Procesando...' : 'Cambiar Imagen'}
+                    </span>
+                  </div>
+                  <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
+                </>
+              )}
             </div>
 
             <div className="p-10 md:w-1/2 flex flex-col">
