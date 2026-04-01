@@ -13,6 +13,7 @@ const Navbar = () => {
   const links = [
     { name: 'El Registro', path: '/' },
     { name: 'Misivas', path: '/conversations' },
+    { name: 'Invitaciones', path: '/invitations' },
     { name: 'Mi Perfil', path: '/profile' },
   ];
 

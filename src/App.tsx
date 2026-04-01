@@ -11,6 +11,8 @@ import Loader from './components/Loader';
 import Navbar from './components/Navbar';
 import Profile from './pages/Profile';
 import Conversations from './pages/Conversations';
+import Invitations from './pages/Invitations';
+import VaultGate from './pages/VaultGate';
 
 // LE GARDE DU CORPS INTELLIGENT
 const ProtectedRoute = ({ children }: { children: React.ReactElement }) => {
@@ -49,6 +51,7 @@ function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/invite" element={<VaultGate />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
 
             <Route
@@ -69,8 +72,17 @@ function App() {
               }
             />
 
+            <Route
+              path="/invitations"
+              element={
+                <ProtectedRoute>
+                  <Invitations />
+                </ProtectedRoute>
+              }
+            />
+
             <Route path="*" element={<Navigate to="/" replace />} />
-            <Route path='/profile' element={<Profile/>}></Route>
+            <Route path='/profile' element={<Profile />}></Route>
           </Routes>
         </AuthProvider>
 

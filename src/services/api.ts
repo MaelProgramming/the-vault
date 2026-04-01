@@ -170,3 +170,41 @@ export const markAsRead = async (convId: string) => {
     return null;
   }
 };
+
+// 9. Invitations Système (Coffre Fort)
+export const verifyInvitationCode = async (code: string) => {
+  const response = await fetch(`${BASE_API}/api/invitations/verify`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ code })
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Código de invitación inválido');
+  }
+  return response.json();
+};
+
+export const generateInvitation = async () => {
+  const token = localStorage.getItem('vault_token');
+  const response = await fetch(`${BASE_API}/api/invitations`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Error al forjar la invitación');
+  }
+  return response.json();
+};
+
+export const getMyInvitations = async () => {
+  const token = localStorage.getItem('vault_token');
+  const response = await fetch(`${BASE_API}/api/invitations`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  if (!response.ok) {
+    throw new Error('Error al cargar las invitaciones');
+  }
+  return response.json();
+};
