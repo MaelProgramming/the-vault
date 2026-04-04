@@ -13,6 +13,7 @@ interface MemberProps {
   gender: 'M' | 'F';
   isTopCard?: boolean;
   is_verified?: boolean;
+  elite_score?: number;
 }
 export interface ExtendedProps extends MemberProps {
     isTopCard?: boolean;
@@ -34,7 +35,8 @@ interface Member {
     bio: string;
     full_name: string;
     graduation_year: number;
-    is_verified: boolean
+    is_verified: boolean;
+    elite_score?: number;
 }
 
 export interface HeaderProps {

@@ -8,7 +8,7 @@ import type { RankType } from './RankBadge';
 import { useAuth } from '../context/AuthContext';
 
 const IdentityCard: React.FC<ExtendedProps> = ({
-  id, name, major, year, avatar_url, bio, gender, isTopCard, is_verified, onSwiped
+  id, name, major, year, avatar_url, bio, gender, isTopCard, is_verified, elite_score, onSwiped
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [currentImage, setCurrentImage] = useState(avatar_url);
@@ -100,6 +100,11 @@ const IdentityCard: React.FC<ExtendedProps> = ({
 
         <div className="text-center px-2">
           <RankBadge rank={rank} className="mb-4" />
+          {elite_score !== undefined && (
+            <p className="text-[#C5A059] text-[9px] tracking-[0.3em] uppercase mb-2 font-semibold">
+              ✧ Afinidad Élite: {elite_score}%
+            </p>
+          )}
           <h2 className="font-serif text-xl tracking-[0.15em] uppercase text-black">{name}</h2>
           <div className="flex items-center justify-center gap-2 mt-2">
             <p className="text-[10px] font-light tracking-widest text-stone-400 uppercase">{major}</p>
@@ -176,6 +181,11 @@ const IdentityCard: React.FC<ExtendedProps> = ({
                   <p className="text-[10px] tracking-[0.2em] text-stone-400 uppercase mt-1">
                     {gender === 'F' ? 'Lady' : 'Gentleman'} — {year}
                   </p>
+                  {elite_score !== undefined && (
+                    <p className="text-[#C5A059] text-[10px] tracking-widest uppercase mt-3 font-semibold flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059]"></span> Afinidad Élite: {elite_score}%
+                    </p>
+                  )}
                 </div>
                 <button onClick={() => setIsOpen(false)} className="text-stone-300 hover:text-black transition-colors text-xl">×</button>
               </div>
